@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: chatbot-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ev_chatbot_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+server:
+  port: ${SERVER_PORT:8006}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+
+# JWT_SECRET must match user-service/provider-service -- this service only validates tokens
+# they issue, it never signs its own.
+jwt:
+  secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationAndValidationWithMinimum32Characters}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://evrechargeindia.com,https://www.evrechargeindia.com,http://localhost:4200,capacitor://localhost,https://localhost}
+  anthropic:
+    # Read from Secrets Manager via env at deploy time -- never committed.
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${ANTHROPIC_MODEL:claude-opus-5}
+    max-tokens: ${ANTHROPIC_MAX_TOKENS:2048}
+  chatbot:
+    # How many prior turns (user+assistant messages) to resend as context on each new message.
+    max-history: ${CHATBOT_MAX_HISTORY:20}
+
+logging:
+  level:
+    root: INFO
+    com.evcharging: DEBUG
+  file:
+    name: logs/chatbot-service.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info
