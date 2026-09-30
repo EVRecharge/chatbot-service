@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 /** One turn (either side) of a driver's or provider's support-chat conversation with the assistant. */
 @Entity
 @Table(name = "chat_messages", indexes = {
-    @Index(name = "idx_chat_messages_entity", columnList = "entity_type, entity_id, created_at")
+    @Index(name = "idx_chat_messages_entity", columnList = "entity_type,entity_id")
 })
 @Data
 @NoArgsConstructor
@@ -37,6 +37,6 @@ public class ChatMessage {
     private String content;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }
